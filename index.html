@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        #main{
+            display: flex;
+        }
+        #main>div>img{
+            border-radius: 50%;
+    
+        }
+        #main:nth-child(1){
+            width: 30%;
+        }
+        #main>div>button{
+            width: 70%;
+        
+            margin-left: 23%;
+            font-weight: bold;
+            font-size: 20px;
+
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #main>div{
+            margin-left: 10%;
+        }
+        h3{
+            color: blue;
+        }
+        .join{
+            display: flex;
+            gap:20px;
+        }
+        .join>button{
+            height: 25px;
+            align-items: center;
+            border-radius: 10px;
+            margin-top: 20px;
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar"></div>
+    <div id="main"></div>
+</body>
+</html>
+<script type="module">
+    import {header} from './header.js'
+
+    //console.log(header)
+    let navbar = document.getElementById('navbar')
+
+    navbar.innerHTML=header();
+
+
+    //"https://api.github.com/users/{user}/repos
+
+    let input_box = document.getElementById("search-input")
+
+    input_box.addEventListener('keypress',()=>{
+        getData(event)
+    });
+
+    let img = document.getElementById("profile-img")
+
+    const getData = async(e)=>{
+        //console.log(e)
+        try{
+            if(e.code === 'Enter'){
+            let input = input_box.value;
+            //console.log(input)
+            let res = await fetch(`https://api.github.com/users/${input}/repos`)
+
+            let data = await res.json()
+            console.log(data)
+            img.src = data[0].owner.avatar_url;
+            appendData(data)
+
+        }
+
+        }
+        catch(err){
+            console.log('err')
+        }
+
+    }
+
+    const appendData = (data)=>{
+        document.getElementById("main").innerHTML=null;
+        let maindiv = document.getElementById("main")
+
+        let div = document.createElement('div')
+
+        let img = document.createElement('img')
+        img.src = data[0].owner.avatar_url;
+
+        let name = document.createElement('h1')
+        name.innerText=data[0].owner.login;
+
+        let btn = document.createElement('button')
+        btn.innerText="Edit Profile"
+        div.append(img,name,btn)
+
+        let div1 =document.createElement('div')
+
+        let repo = document.createElement('h1')
+        repo.innerText="Repositerories"
+
+        
+        //
+        div1.append(repo)
+
+        data.forEach(function(elem){
+            console.log(elem)
+
+            let join = document.createElement('div')
+            let p_name = document.createElement('h3')
+            p_name.innerText=elem.name;
+
+            let type = document.createElement('button')
+            type.innerText=elem.visibility;
+            join.append(p_name,type)
+            join.setAttribute('class','join')
+            //cosole.log(p_name)
+            let des = document.createElement('p')
+            des.innerText= elem.description;
+
+            let update = document.createElement('p')
+            update.innerText= elem.created_at;
+            div1.append(join,des,update)
+
+        })
+
+        
+
+        
+
+        
+
+        maindiv.append(div,div1)
+
+    }
+
+
+</script>
